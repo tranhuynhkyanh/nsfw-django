@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 from core import settings
 
 urlpatterns = [
-    path('api/v1/auth/user/', include('apps.user.urls')),
+    path('api/v1/predict', include('apps.predict.urls')),
     ]
 
 if settings.DEBUG:

@@ -8,10 +8,10 @@ from os.path import isfile, join, exists, isdir, abspath
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-import tensorflow_hub as hub
+import tensorflow_hub as hubv1
 
+IMAGE_DIM = 224  # required/default image dimensionality
 
-IMAGE_DIM = 224   # required/default image dimensionality
 
 def load_images(image_paths, image_size, verbose=True):
     '''
@@ -46,14 +46,15 @@ def load_images(image_paths, image_size, verbose=True):
             loaded_image_paths.append(img_path)
         except Exception as ex:
             print("Image Load Failure: ", img_path, ex)
-    
+
     return np.asarray(loaded_images), loaded_image_paths
+
 
 def load_model(model_path):
     if model_path is None or not exists(model_path):
-    	raise ValueError("saved_model_path must be the valid directory of a saved model to load.")
-    
-    model = tf.keras.models.load_model(model_path, custom_objects={'KerasLayer': hub.KerasLayer},compile=False)
+        raise ValueError("saved_model_path must be the valid directory of a saved model to load.")
+
+    model = tf.keras.models.load_model(model_path, custom_objects={'KerasLayer': hubv1.KerasLayer}, compile=False)
     return model
 
 
@@ -65,7 +66,7 @@ def classify(model, input_paths, image_dim=IMAGE_DIM, predict_args={}):
     """
     images, image_paths = load_images(input_paths, (image_dim, image_dim))
     probs = classify_nd(model, images, predict_args)
-    return dict(zip(image_paths, probs))
+    return probs[0]
 
 
 def classify_nd(model, nd_images, predict_args={}):
@@ -76,7 +77,7 @@ def classify_nd(model, nd_images, predict_args={}):
     """
     model_preds = model.predict(nd_images, **predict_args)
     # preds = np.argsort(model_preds, axis = 1).tolist()
-    
+
     categories = ['drawings', 'hentai', 'neutral', 'porn', 'sexy']
 
     probs = []
@@ -95,26 +96,26 @@ def main(args=None):
         Launch with default model and a test image
             python nsfw_detector/predict.py --saved_model_path mobilenet_v2_140_224 --image_source test.jpg
     """, formatter_class=argparse.RawTextHelpFormatter)
-    
+
     submain = parser.add_argument_group('main execution and evaluation functionality')
-    submain.add_argument('--image_source', dest='image_source', type=str, required=True, 
-                            help='A directory of images or a single image to classify')
-    submain.add_argument('--saved_model_path', dest='saved_model_path', type=str, required=True, 
-                            help='The model to load')
+    submain.add_argument('--image_source', dest='image_source', type=str, required=True,
+                         help='A directory of images or a single image to classify')
+    submain.add_argument('--saved_model_path', dest='saved_model_path', type=str, required=True,
+                         help='The model to load')
     submain.add_argument('--image_dim', dest='image_dim', type=int, default=IMAGE_DIM,
-                            help="The square dimension of the model's input shape")
+                         help="The square dimension of the model's input shape")
     if args is not None:
         config = vars(parser.parse_args(args))
     else:
         config = vars(parser.parse_args())
 
     if config['image_source'] is None or not exists(config['image_source']):
-    	raise ValueError("image_source must be a valid directory with images or a single image to classify.")
-    
-    model = load_model(config['saved_model_path'])    
+        raise ValueError("image_source must be a valid directory with images or a single image to classify.")
+
+    model = load_model(config['saved_model_path'])
     image_preds = classify(model, config['image_source'], config['image_dim'])
     print(json.dumps(image_preds, indent=2), '\n')
 
 
 if __name__ == "__main__":
-	main()
+    main()
