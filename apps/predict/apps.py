@@ -19,7 +19,7 @@ class PredictConfig(AppConfig):
             from django.contrib.auth.models import User
             if not User.objects.filter(username='admin').exists():
                 print('Add superuser successfully')
-                User.objects.create_superuser('admin', '', '123456')
+                User.objects.create_superuser('admin', '', 'Cydeva@2024')
                 self.__class__.has_created_superuser = True
             else:
                 print('Superuser already had')
