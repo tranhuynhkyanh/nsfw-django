@@ -4,7 +4,6 @@ from rest_framework import status
 from rest_framework.response import Response
 from functools import wraps
 
-from api.services.telegram import logging
 
 
 def api_decorator(func):
@@ -47,7 +46,6 @@ def api_decorator(func):
                     msg += f'| {str(args[2])}' if len(args) >= 2 else ''
                 except:
                     ...
-                logging(msg=msg, active=True)
                 if len(e.args) > 0:
                     error_value = e.args[0]
 
