@@ -4,8 +4,11 @@ Ref: https://github.com/GantMan/nsfw_model
 Setting your .env to use
 -------------
 DEBUG=True
+
 SECRET_KEY=
+
 ALLOWED_HOSTS=*,
+
 CREDENTIAL=
 
 Use postman to test in localhost:8000/api/v1/predict/nsfw/
