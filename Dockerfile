@@ -14,4 +14,7 @@ EXPOSE 8000
 
 RUN apt-get update && apt-get install -y supervisor
 
-CMD gunicorn core.wsgi:application --bind 0.0.0.0:8000
+#CMD gunicorn core.wsgi:application --bind 0.0.0.0:8000
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+CMD ["supervisord", "-n"]
