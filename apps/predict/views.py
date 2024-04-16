@@ -34,8 +34,6 @@ class PredictImageAPIView(APIView):
         pre = HistoryPredict.objects.create(image=image,
                                             result=rslt)
 
-        print(rslt)
-
         # Sau khi sử dụng, xóa tệp tạm thời
         os.unlink(temp_image_path)
 
